@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
 void main() {
   runApp(BookApp());
@@ -21,6 +23,9 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  final x = 0;
+  final y = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +36,9 @@ class HomePageState extends State<HomePage> {
             const TextField(),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                _buscarLivros();
+              },
               icon: const Icon(Icons.search),
               label: const Text('Pesquisar'),
             ),
@@ -44,5 +51,19 @@ class HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+}
+
+void _buscarLivros() async {
+  final url =
+      Uri.https('www.googleapis.com', '/books/v1/volumes', {'q': '{https}'});
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final jsonResponse = convert.jsonDecode(response.body);
+    final itemCount = jsonResponse['totalItems'];
+    print('Número total de livros encontrados: $itemCount');
+  } else {
+    print('Falha ao requisitar os dados: ${response.statusCode}.');
   }
 }
