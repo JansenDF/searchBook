@@ -25,6 +25,26 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   final x = 0;
   final y = 0;
+  final _controller = TextEditingController();
+  var titulo = '';
+  var itemCount = 0;
+
+  void _buscarLivros() async {
+    titulo = _controller.text;
+    final url = Uri.https(
+        'www.googleapis.com', '/books/v1/volumes', {'q': '{$titulo}'});
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final jsonResponse = convert.jsonDecode(response.body);
+      itemCount = jsonResponse['totalItems'];
+      setState(() {});
+      print(
+          'Número total de livros encontrados com título $titulo: $itemCount');
+    } else {
+      print('Falha ao requisitar os dados: ${response.statusCode}.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +53,7 @@ class HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            const TextField(),
+            TextField(controller: _controller),
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: () {
@@ -44,26 +64,12 @@ class HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Foram encontrados X livros sobre Y: ',
+              'Foram encontrados $itemCount livros sobre $titulo: ',
               style: Theme.of(context).textTheme.headlineMedium,
             )
           ],
         ),
       ),
     );
-  }
-}
-
-void _buscarLivros() async {
-  final url =
-      Uri.https('www.googleapis.com', '/books/v1/volumes', {'q': '{https}'});
-  final response = await http.get(url);
-
-  if (response.statusCode == 200) {
-    final jsonResponse = convert.jsonDecode(response.body);
-    final itemCount = jsonResponse['totalItems'];
-    print('Número total de livros encontrados: $itemCount');
-  } else {
-    print('Falha ao requisitar os dados: ${response.statusCode}.');
   }
 }
