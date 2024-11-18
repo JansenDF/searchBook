@@ -9,8 +9,15 @@ void main() {
 class BookApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage(),
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.amber,
+        inputDecorationTheme: const InputDecorationTheme(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(50))),
+        ),
+      ),
+      home: const HomePage(),
     );
   }
 }
